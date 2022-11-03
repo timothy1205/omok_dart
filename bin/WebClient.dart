@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 
 import 'ResponseParser.dart';
@@ -24,7 +25,18 @@ class WebClient {
   }
 
   dynamic getPlay(String pid, List<int> move) async {
-    var res = await _client.get(Uri.parse("$_url/play?pid=$pid&move=${move[0]},${move[1]}"));
-    return ResponseParser.parsePlay(res);
+    while (true) {
+      // For some reason I sometimes get seemingly random
+      // client exception, so just keep retrying until
+      // a response is received
+      //
+      // I suspect its something to do with HttpClient,
+      // but I still need it for the SSL cert error
+      try {
+        var res = await _client.get(Uri.parse("$_url/play?pid=$pid&move=${move[0]},${move[1]}"));
+        return ResponseParser.parsePlay(res);
+      } on ClientException catch (e) {}
+    }
+
   }
 }

@@ -48,17 +48,29 @@ class Controller {
 
   void _gameLoop() async {
     while (true) {
-      _consoleUI.showBoard();
-      var move = _consoleUI.promptMove();
 
-      // Check if move is in our local board first
-      if (!_board.isEmpty(move)) {
-        _consoleUI.showMessage("Not empty!");
-        continue;
+      _consoleUI.showBoard();
+
+      // Check for end of game
+      if (_handleEndGame()) return;
+
+      // Keep asking for move until we get a valid one
+      List<int> move;
+      while (true) {
+        move = _consoleUI.promptMove();
+
+        // Check if move is in our local board first
+        if (!_board.isEmpty(move)) {
+          _consoleUI.showMessage("Not empty!");
+        } else {
+          break;
+        }
       }
 
+      // Send move to server
+      dynamic res;
       try {
-        var res = await _webClient!.getPlay(_pid, move);
+        res = await _webClient!.getPlay(_pid, move);
       } on OmokPlayError catch(e) {
         _handlePlayError(e);
         continue;
@@ -69,14 +81,63 @@ class Controller {
   }
 
   void _handleMove(dynamic res) {
-    bool endGame = false;
     // First check for player win/draw
     if (res["ack_move"]["isWin"]) {
+      // Player win
       _board.setWinRow(res["ack_move"]["row"]);
       _winner = Actor.player;
       _endState = EndState.win;
+      return;
     } else if (res["ack_move"]["isDraw"]) {
+      // Draw on player move
+      _board.setPlayer(ResponseParser.parseMove(res["ack_move"]));
       _endState = EndState.draw;
+      return;
+    }
+
+    // Non game ending move will just be registered
+    _board.setPlayer(ResponseParser.parseMove(res["ack_move"]));
+
+    // If we haven't returned then
+    // there must be a response move
+
+    // Check for server win/draw
+    if (res["move"]["isWin"]) {
+      // Server win
+      _board.setServer(ResponseParser.parseMove(res["move"]));
+      _board.setWinRow(res["move"]["row"]);
+      _winner = Actor.server;
+      _endState = EndState.win;
+      return;
+    } else if (res["move"]["isDraw"]) {
+      // Draw on server move
+      _board.setServer(ResponseParser.parseMove(res["move"]));
+      _endState = EndState.draw;
+      return;
+    }
+
+    _board.setServer(ResponseParser.parseMove(res["move"]));
+  }
+
+  // Return true to end game, false to keep it going
+  bool _handleEndGame() {
+    switch (_endState) {
+      case EndState.draw: {
+        _consoleUI.showMessage("It's a draw!");
+        return true;
+      }
+      case EndState.win: {
+        if (_winner == Actor.server) {
+          _consoleUI.showMessage("You lose :(");
+        } else {
+          _consoleUI.showMessage("You win!");
+        }
+        return true;
+      }
+      default: {
+        // Game isn't over
+        return false;
+      }
     }
   }
 

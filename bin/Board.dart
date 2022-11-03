@@ -34,11 +34,17 @@ class Board {
 
     // Mark position as latest server move
     data?[move[0]][move[1]] = ServerLatest;
+    _lastServerMove = move;
   }
 
-  void setWinRow(List<int> row) {
+  void setWinRow(List<dynamic> row) {
     for (int i = 0; i < row.length; i += 2) {
-      data?[i][i + 1] = Win;
+      data?[row[i]][row[i + 1]] = Win;
+    }
+
+    if (_lastServerMove != null) {
+      // Preserve last server move in case it was overriden
+      data?[_lastServerMove![0]][_lastServerMove![1]] = ServerLatest;
     }
   }
 }

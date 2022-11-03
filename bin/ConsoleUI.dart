@@ -65,7 +65,7 @@ class ConsoleUI {
     mainLoop:
     while (true) {
       stdout.write("Enter x and y (1-${_board.size}, eg.. 8 10): ");
-      var line = stdin.readLineSync();
+      var line = stdin.readLineSync()?.trim(); // Ignore outside spaces
       if (line == null || line.isEmpty) continue;
 
       List<String> split;
@@ -101,7 +101,8 @@ class ConsoleUI {
         coords.add(coord - 1);
       }
 
-      return coords;
+      // Reverse to match column major structure
+      return coords.reversed.toList();
     }
   }
 
@@ -121,6 +122,6 @@ class ConsoleUI {
       stdout.writeln("${y++ % 10}| $line");
     }
 
-    stdout.writeln("\nPlayer: ${Board.Player}, Server: ${Board.Server} (and ${Board.ServerLatest})");
+    stdout.writeln("\nPlayer: ${Board.Player}, Server: ${Board.Server} (and ${Board.ServerLatest})\n");
   }
 }

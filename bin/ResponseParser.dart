@@ -43,10 +43,14 @@ class ResponseParser {
     var data = jsonDecode(res.body);
     _handleError(data);
 
-    // Delete response field
-    data.delete("response");
+    // Remove response field
+    data.remove("response");
 
     return data;
+  }
+
+  static List<int> parseMove(Map object) {
+    return [object["x"], object["y"]];
   }
 
   // Determine if response was an error
