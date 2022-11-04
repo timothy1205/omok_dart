@@ -18,7 +18,7 @@ class OmokNewError extends OmokException {
 
 class OmokPlayError extends OmokException {
   /// List of possible error messages that cannot be ignored
-  static List<String> _unhandleable = ["Pid not specified", "Unknown pid", "Move not specified", "Move not well-formed"];
+  static final List<String> _unhandleable = ["Pid not specified", "Unknown pid", "Move not specified", "Move not well-formed"];
   OmokPlayError(String msg) : super(msg);
 
   /// Determine if current error can be ignored or not (should be caught)

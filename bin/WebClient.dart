@@ -11,7 +11,7 @@ class WebClient {
   WebClient(this._url) {
     // Create client that ignores SSL cert errors since UTEP website gives me issues
     HttpClient httpClient = HttpClient()..badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
-    this._client = IOClient(httpClient);
+    _client = IOClient(httpClient);
   }
 
   dynamic getInfo() async {
@@ -35,7 +35,7 @@ class WebClient {
       try {
         var res = await _client.get(Uri.parse("$_url/play?pid=$pid&move=${move[0]},${move[1]}"));
         return ResponseParser.parsePlay(res);
-      } on ClientException catch (e) {}
+      } on ClientException {}
     }
 
   }
