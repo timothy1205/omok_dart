@@ -1,3 +1,6 @@
+// Timothy Gonzales
+// Dart TUI Omok Client
+
 import 'Board.dart';
 import 'ConsoleUI.dart';
 import 'ResponseParser.dart';

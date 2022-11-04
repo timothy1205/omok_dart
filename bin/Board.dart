@@ -1,3 +1,6 @@
+// Timothy Gonzales
+// Dart TUI Omok Client
+
 class Board {
   static String Empty = ".";
   static String Player = "O";

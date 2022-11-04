@@ -1,3 +1,6 @@
+// Timothy Gonzales
+// Dart TUI Omok Client
+
 import 'dart:io';
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
