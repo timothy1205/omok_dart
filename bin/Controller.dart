@@ -3,7 +3,9 @@ import 'ConsoleUI.dart';
 import 'ResponseParser.dart';
 import 'WebClient.dart';
 
+/// The actor that may win the game.
 enum Actor { player, server, none }
+/// The end state of the game, if we reached the end.
 enum EndState { win, draw, none }
 
 class Controller {
@@ -19,7 +21,8 @@ class Controller {
   Actor _winner = Actor.none;
   EndState _endState = EndState.none;
 
-  void start() async {
+  /// Start the game client
+  Future start() async {
     // First connect to the server
     var result = _consoleUI.promptServer(defaultUrl);
     var url = result ?? defaultUrl;
@@ -43,10 +46,11 @@ class Controller {
     _board.createBoard();
 
     // Begin game loop
-    _gameLoop();
+    return _gameLoop();
   }
 
-  void _gameLoop() async {
+  /// Start while loop for game client
+  Future _gameLoop() async {
     while (true) {
 
       _consoleUI.showBoard();
@@ -80,6 +84,7 @@ class Controller {
     }
   }
 
+  /// Handle the result of a getPlay call
   void _handleMove(dynamic res) {
     // First check for player win/draw
     if (res["ack_move"]["isWin"]) {
@@ -119,7 +124,9 @@ class Controller {
     _board.setServer(ResponseParser.parseMove(res["move"]));
   }
 
-  // Return true to end game, false to keep it going
+  /// Check for and handle the end of the game.
+  ///
+  /// Returns true to stop the gameLoop, false to keep going.
   bool _handleEndGame() {
     switch (_endState) {
       case EndState.draw: {
@@ -141,6 +148,7 @@ class Controller {
     }
   }
 
+  /// Handle potential game errors
   void _handlePlayError(OmokPlayError e) {
     if (!e.canHandle()) throw e; // If we can't handle it, throw it back up
 

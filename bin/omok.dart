@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'Controller.dart';
 
-void main() {
-  Controller().start();
+void main() async {
+  await Controller().start();
+
+  stdout.writeln("\nQuitting...");
 }

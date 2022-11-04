@@ -6,10 +6,14 @@ class ConsoleUI {
 
   ConsoleUI(this._board);
 
+  /// Wrapper for stdout.writeln
   void showMessage(String msg) {
     stdout.writeln(msg);
   }
 
+  /// Get a server from user
+  ///
+  /// Returns null if nothing given (defer to default)
   String? promptServer(String defaultUrl) {
     stdout.write("Enter the server URL [default: $defaultUrl]");
     var line = stdin.readLineSync();
@@ -21,6 +25,9 @@ class ConsoleUI {
     return line;
   }
 
+  /// Get a strategy from user
+  ///
+  /// Returns null if nothing given (defer to default)
   int? promptStrategy(List strategies, int defaultStrategy) {
     defaultStrategy++; // Start at 1
 
@@ -61,6 +68,9 @@ class ConsoleUI {
     }
   }
 
+  /// Get a pair of coords from user
+  ///
+  /// Does not return until valid coords provided
   List<int> promptMove() {
     mainLoop:
     while (true) {
@@ -106,6 +116,7 @@ class ConsoleUI {
     }
   }
 
+  /// Print out a nice display for the board
   void showBoard() {
     if (_board.data == null) {
       throw Exception("Board must be created first!");

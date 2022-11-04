@@ -17,9 +17,11 @@ class OmokNewError extends OmokException {
 }
 
 class OmokPlayError extends OmokException {
+  /// List of possible error messages that cannot be ignored
   static List<String> _unhandleable = ["Pid not specified", "Unknown pid", "Move not specified", "Move not well-formed"];
   OmokPlayError(String msg) : super(msg);
 
+  /// Determine if current error can be ignored or not (should be caught)
   bool canHandle() {
     return !_unhandleable.contains(msg);
   }
@@ -33,7 +35,7 @@ class ResponseParser {
 
   static dynamic parseNew(Response res) {
     var data = jsonDecode(res.body);
-    _handleError(data);
+    _handleError<OmokNewError>(data);
 
     // We can just return the pid if no error occured
     return data["pid"];
@@ -41,9 +43,9 @@ class ResponseParser {
 
   static dynamic parsePlay(Response res) {
     var data = jsonDecode(res.body);
-    _handleError(data);
+    _handleError<OmokPlayError>(data);
 
-    // Remove response field
+    // Response field no longer needed if not an error
     data.remove("response");
 
     return data;
@@ -53,10 +55,10 @@ class ResponseParser {
     return [object["x"], object["y"]];
   }
 
-  // Determine if response was an error
+  /// Determine if response was an error
   static void _handleError<T>(data) {
     if (!data["response"]) {
-      // Bad response, throw
+      // Bad response, throw correct error
       if (T is OmokNewError) {
         throw OmokNewError(data["msg"]);
       } else if (T is OmokPlayError) {

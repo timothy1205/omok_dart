@@ -9,23 +9,26 @@ class Board {
   List<List<String>>? data;
   List<int>? _lastServerMove;
 
+  /// Generate 2D List with every value defaulting to Empty
   createBoard() {
-    // Generate a 2D array (list of lists) with every value defaulting to '.'
     // No list may be resized
     data = List.generate(size,
       (i) => List.filled(size, Empty, growable: false),
       growable: false);
   }
 
-  bool isEmpty(List<int> move) {
-    return data?[move[0]][move[1]] == Empty;
+  /// Check if a given pair of coordinates is an empty spot
+  bool isEmpty(List<int> coords) {
+    return data?[coords[0]][coords[1]] == Empty;
   }
 
-  void setPlayer(List<int> move) {
-    data?[move[0]][move[1]] = Player;
+  /// Set tile at coords to player stone
+  void setPlayer(List<int> coords) {
+    data?[coords[0]][coords[1]] = Player;
   }
 
-  void setServer(List<int> move) {
+  /// Set tile at coords to server stone
+  void setServer(List<int> coords) {
     if (_lastServerMove != null) {
       // If we have a old latest server move,
       // change it to a normal Server character
@@ -33,10 +36,11 @@ class Board {
     }
 
     // Mark position as latest server move
-    data?[move[0]][move[1]] = ServerLatest;
-    _lastServerMove = move;
+    data?[coords[0]][coords[1]] = ServerLatest;
+    _lastServerMove = coords;
   }
 
+  /// Mark row tiles as Win stone
   void setWinRow(List<dynamic> row) {
     for (int i = 0; i < row.length; i += 2) {
       data?[row[i]][row[i + 1]] = Win;
